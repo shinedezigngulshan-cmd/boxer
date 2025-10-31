@@ -1,0 +1,309 @@
+<section id="new-slider-{{ section.id }}" class="new-slider section-{{ section.id }}">
+  <div class="new-slider__viewport">
+    <div class="new-slider__slides" aria-live="polite">
+      {% for block in section.blocks %}
+        <div class="new-slider__slide{% if forloop.first %} is-active{% endif %}"
+             data-slide-index="{{ forloop.index0 }}"
+             {{ block.shopify_attributes }}
+             role="group"
+             aria-roledescription="slide"
+             aria-label="{{ forloop.index }} of {{ section.blocks_count }}"
+             aria-hidden="{{ forloop.first | default: false | negate | json }}">
+          {% if block.settings.image != blank %}
+            <img class="new-slider__image"
+                 src="{{ block.settings.image | img_url: block.settings.image_size | default: 'master' }}"
+                 alt="{{ block.settings.alt_text | escape }}"
+                 loading="{{ forloop.first | default: false | ternary: 'eager', 'lazy' }}">
+          {% else %}
+            <div class="new-slider__image new-slider__placeholder" role="img" aria-label="No image available">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" focusable="false" aria-hidden="true">
+                <rect width="100%" height="100%" fill="#f3f4f6"/>
+                <g fill="#9ca3af" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="28">
+                  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">No image</text>
+                </g>
+              </svg>
+            </div>
+          {% endif %}
+
+          <div class="new-slider__content">
+            {% if block.settings.heading != blank %}
+              <div class="new-slider__heading">{{ block.settings.heading }}</div>
+            {% endif %}
+            {% if block.settings.description != blank %}
+              <div class="new-slider__description">{{ block.settings.description }}</div>
+            {% endif %}
+            {% if block.settings.link != blank %}
+              <div class="new-slider__action">
+                <a href="{{ block.settings.link }}" class="new-slider__button">{{ block.settings.button_text | default: 'Learn more' }}</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if section.settings.show_arrows %}
+    <button class="new-slider__arrow new-slider__arrow--prev" aria-label="Previous slide">‹</button>
+    <button class="new-slider__arrow new-slider__arrow--next" aria-label="Next slide">›</button>
+  {% endif %}
+
+  {% if section.settings.show_dots %}
+    <div class="new-slider__dots" role="tablist">
+      {% for block in section.blocks %}
+        <button class="new-slider__dot" data-dot-index="{{ forloop.index0 }}" aria-label="Go to slide {{ forloop.index }}" role="tab" aria-selected="{{ forloop.first }}"></button>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <style>
+    /* CSS variables and safe font output inside style block to avoid breaking attributes */
+    #new-slider-{{ section.id }} {
+      --slider-height: {{ section.settings.height | default: '400px' }};
+      --image-max-height: {{ section.settings.image_max_height | default: 'auto' }};
+      --image-object-fit: {{ section.settings.image_object_fit | default: 'cover' }};
+      --heading-font-size: {{ section.settings.heading_font_size | default: '32px' }};
+      --heading-color: {{ section.settings.heading_color | default: '#ffffff' }};
+      --description-font-size: {{ section.settings.description_font_size | default: '18px' }};
+      --description-color: {{ section.settings.description_color | default: '#ffffff' }};
+      --button-bg-color: {{ section.settings.button_bg_color | default: '#000000' }};
+      --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }};
+      --fade-duration: {{ section.settings.fade_duration | default: '600ms' }};
+      --text-align: {{ section.settings.text_align | default: 'center' }};
+      height: var(--slider-height);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Use theme font settings directly for safe font-family rendering */
+    #new-slider-{{ section.id }} .new-slider__heading { font-family: {{ settings.type_header_font.family | default: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial" }}; }
+    #new-slider-{{ section.id }} .new-slider__description { font-family: {{ settings.type_body_font.family | default: "system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial" }}; }
+
+    /* Base slider styles */
+    #new-slider-{{ section.id }} .new-slider__viewport { width: 100%; height: 100%; overflow: hidden; }
+    #new-slider-{{ section.id }} .new-slider__slides { position: relative; width: 100%; height: 100%; }
+
+    /* Slide - stacked for fade */
+    #new-slider-{{ section.id }} .new-slider__slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity var(--fade-duration) ease, visibility 0s linear calc(var(--fade-duration));
+      pointer-events: none;
+      z-index: 1;
+    }
+    #new-slider-{{ section.id }} .new-slider__slide.is-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      z-index: 2;
+      transition: opacity var(--fade-duration) ease;
+    }
+
+    /* Image / placeholder styles */
+    #new-slider-{{ section.id }} .new-slider__image,
+    #new-slider-{{ section.id }} .new-slider__placeholder {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #new-slider-{{ section.id }} .new-slider__image {
+      object-fit: var(--image-object-fit);
+      max-height: var(--image-max-height);
+    }
+    #new-slider-{{ section.id }} .new-slider__placeholder svg { width:100%; height:100%; display:block; }
+
+    /* Content styles */
+    #new-slider-{{ section.id }} .new-slider__content {
+      position: relative;
+      z-index: 3;
+      text-align: var(--text-align);
+      max-width: 80%;
+      margin: 0 auto;
+      pointer-events: auto;
+    }
+
+    /* Heading richtext */
+    #new-slider-{{ section.id }} .new-slider__heading,
+    #new-slider-{{ section.id }} .new-slider__heading * {
+      font-size: var(--heading-font-size);
+      color: var(--heading-color);
+      margin: 0 0 20px;
+      line-height: 1.2;
+      color: var(--heading-color);
+    }
+
+    /* Description richtext (force inherit color on inline tags) */
+    #new-slider-{{ section.id }} .new-slider__description,
+    #new-slider-{{ section.id }} .new-slider__description * {
+      font-size: var(--description-font-size);
+      color: var(--description-color) !important;
+      margin: 0 0 30px;
+      line-height: 1.5;
+    }
+    #new-slider-{{ section.id }} .new-slider__description p { margin: 0 0 10px; }
+    #new-slider-{{ section.id }} .new-slider__description p:last-child { margin-bottom: 0; }
+
+    /* Button styles */
+    #new-slider-{{ section.id }} .new-slider__button {
+      display: inline-block;
+      padding: 12px 24px;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+      background-color: var(--button-bg-color);
+      color: var(--button-text-color);
+      z-index: 4;
+    }
+    #new-slider-{{ section.id }} .new-slider__button:hover { opacity: 0.9; }
+
+    /* Navigation */
+    #new-slider-{{ section.id }} .new-slider__arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      border: none;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      z-index: 5;
+      font-size: 24px;
+      border-radius: 50%;
+    }
+    #new-slider-{{ section.id }} .new-slider__arrow--prev { left: 20px; }
+    #new-slider-{{ section.id }} .new-slider__arrow--next { right: 20px; }
+
+    /* Dots */
+    #new-slider-{{ section.id }} .new-slider__dots { position: absolute; left:50%; transform:translateX(-50%); bottom:20px; z-index:5; display:flex; gap:8px;}
+    #new-slider-{{ section.id }} .new-slider__dot { width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.5);border:none;cursor:pointer;}
+    #new-slider-{{ section.id }} .new-slider__dot[aria-selected="true"] { background:#fff; }
+
+    @media (max-width:767px) {
+      #new-slider-{{ section.id }} .new-slider__content { max-width:90%; }
+      #new-slider-{{ section.id }} .new-slider__heading { font-size: calc(var(--heading-font-size) * 0.8); }
+      #new-slider-{{ section.id }} .new-slider__description { font-size: calc(var(--description-font-size) * 0.9); }
+    }
+  </style>
+ 
+  
+  <script>
+    (function() {
+      const slider = document.getElementById('new-slider-{{ section.id }}');
+      if (!slider) return;
+
+      // cleanup previous instance
+      if (slider._instance?.cleanup) slider._instance.cleanup();
+
+      const slides = Array.from(slider.querySelectorAll('.new-slider__slide'));
+      if (!slides.length) return;
+
+      const dots = Array.from(slider.querySelectorAll('.new-slider__dot'));
+      const nextBtn = slider.querySelector('.new-slider__arrow--next');
+      const prevBtn = slider.querySelector('.new-slider__arrow--prev');
+
+      // Read settings with proper types
+      const autoplay = {{ section.settings.autoplay | json }};
+      const intervalSeconds = {{ section.settings.interval | default: 5 }};
+      const interval = Number(intervalSeconds) * 1000;
+
+      let current = 0;
+      let timer = null;
+
+      function setActive(i) {
+        current = (i + slides.length) % slides.length;
+        slides.forEach((s, idx) => {
+          const active = idx === current;
+          s.classList.toggle('is-active', active);
+          s.setAttribute('aria-hidden', (!active).toString());
+        });
+        dots.forEach((d, idx) => d.setAttribute('aria-selected', (idx === current).toString()));
+      }
+
+      function next() { setActive(current + 1); }
+      function prev() { setActive(current - 1); }
+
+      function start() {
+        // only start if autoplay setting is true and no existing timer
+        if (autoplay && slides.length > 1 && timer === null) {
+          timer = setInterval(next, interval);
+        }
+      }
+      function stop() {
+        if (timer !== null) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }
+      function reset() { stop(); start(); }
+
+      if (nextBtn) nextBtn.addEventListener('click', () => { next(); reset(); });
+      if (prevBtn) prevBtn.addEventListener('click', () => { prev(); reset(); });
+
+      dots.forEach((d, idx) => d.addEventListener('click', () => { setActive(idx); reset(); }));
+
+      // touch
+      let sx = 0;
+      slider.addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+      slider.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - sx;
+        if (Math.abs(dx) > 50) dx > 0 ? prev() : next();
+        reset();
+      });
+
+      // initialize
+      setActive(0);
+      start();
+
+      slider._instance = { cleanup: () => { stop(); } };
+    })();
+  </script>
+
+</section>
+ 
+{% schema %}
+{
+  "name": "Enhanced Slider",
+  "settings": [
+    { "type": "select", "id": "height", "label": "Slider height", "options":[{"value":"300px","label":"300px"},{"value":"400px","label":"400px"},{"value":"500px","label":"500px"},{"value":"600px","label":"600px"},{"value":"700px","label":"700px"}], "default":"500px" },
+    { "type": "select", "id": "text_align", "label": "Text alignment", "options":[{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}], "default":"center" },
+    { "type": "select", "id": "image_object_fit", "label": "Image fit", "options":[{"value":"cover","label":"Cover"},{"value":"contain","label":"Contain"},{"value":"fill","label":"Fill"}], "default":"cover" },
+    { "type": "select", "id": "heading_font_size", "label": "Heading size", "options":[{"value":"24px","label":"Small"},{"value":"32px","label":"Medium"},{"value":"42px","label":"Large"},{"value":"52px","label":"Extra Large"}], "default":"42px" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default":"#ffffff" },
+    { "type": "select", "id": "description_font_size", "label": "Description size", "options":[{"value":"14px","label":"Small"},{"value":"16px","label":"Medium"},{"value":"18px","label":"Large"},{"value":"20px","label":"Extra Large"}], "default":"18px" },
+    { "type": "color", "id": "description_color", "label": "Description color", "default":"#ffffff" },
+    { "type": "color", "id": "button_bg_color", "label": "Button background", "default":"#000000" },
+    { "type": "color", "id": "button_text_color", "label": "Button text color", "default":"#ffffff" },
+    { "type": "checkbox", "id": "show_arrows", "label": "Show arrows", "default": true },
+    { "type": "checkbox", "id": "show_dots", "label": "Show dots", "default": true },
+    { "type": "checkbox", "id": "autoplay", "label": "Enable autoplay", "default": true },
+    { "type": "range", "id": "interval", "label": "Change slides every (seconds)", "min":3, "max":10, "step":1, "default":5 }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        { "type": "richtext", "id": "heading", "label": "Heading", "default": "<p><strong>Your Heading Here</strong></p>" },
+        { "type": "richtext", "id": "description", "label": "Description", "default": "<p>Add your description here with <em>formatting</em></p>" },
+        { "type": "url", "id": "link", "label": "Button link" },
+        { "type": "text", "id": "button_text", "label": "Button text", "default": "Learn More" },
+        { "type": "select", "id": "image_size", "label": "Image size", "options":[{"value":"small","label":"Small (300x)"},{"value":"medium","label":"Medium (600x)"},{"value":"large","label":"Large (900x)"},{"value":"master","label":"Original"}], "default":"master" }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Enhanced Slider", "category": "Image", "blocks":[ { "type":"slide" } ] }
+  ]
+}
+{% endschema %}
