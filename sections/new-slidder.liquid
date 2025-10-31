@@ -2,21 +2,31 @@
   <div class="new-slider__viewport">
     <div class="new-slider__slides" aria-live="polite">
       {% for block in section.blocks %}
-        <div class="new-slider__slide{% if forloop.first %} is-active{% endif %}"
-             data-slide-index="{{ forloop.index0 }}"
-             {{ block.shopify_attributes }}
-             role="group"
-             aria-roledescription="slide"
-             aria-label="{{ forloop.index }} of {{ section.blocks_count }}"
-             aria-hidden="{{ forloop.first | default: false | negate | json }}">
+        <div
+          class="new-slider__slide{% if forloop.first %} is-active{% endif %}"
+          data-slide-index="{{ forloop.index0 }}"
+          {{ block.shopify_attributes }}
+          role="group"
+          aria-roledescription="slide"
+          aria-label="{{ forloop.index }} of {{ section.blocks_count }}"
+          aria-hidden="{{ forloop.first | default: false | negate | json }}"
+        >
           {% if block.settings.image != blank %}
-            <img class="new-slider__image"
-                 src="{{ block.settings.image | img_url: block.settings.image_size | default: 'master' }}"
-                 alt="{{ block.settings.alt_text | escape }}"
-                 loading="{{ forloop.first | default: false | ternary: 'eager', 'lazy' }}">
+            <img
+              class="new-slider__image"
+              src="{{ block.settings.image | img_url: block.settings.image_size | default: 'master' }}"
+              alt="{{ block.settings.alt_text | escape }}"
+              loading="{{ forloop.first | default: false | ternary: 'eager', 'lazy' }}"
+            >
           {% else %}
             <div class="new-slider__image new-slider__placeholder" role="img" aria-label="No image available">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" focusable="false" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 1200 600"
+                preserveAspectRatio="xMidYMid slice"
+                focusable="false"
+                aria-hidden="true"
+              >
                 <rect width="100%" height="100%" fill="#f3f4f6"/>
                 <g fill="#9ca3af" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="28">
                   <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle">No image</text>
@@ -34,7 +44,9 @@
             {% endif %}
             {% if block.settings.link != blank %}
               <div class="new-slider__action">
-                <a href="{{ block.settings.link }}" class="new-slider__button">{{ block.settings.button_text | default: 'Learn more' }}</a>
+                <a href="{{ block.settings.link }}" class="new-slider__button">
+                  {{- block.settings.button_text | default: 'Learn more' -}}
+                </a>
               </div>
             {% endif %}
           </div>
@@ -51,7 +63,13 @@
   {% if section.settings.show_dots %}
     <div class="new-slider__dots" role="tablist">
       {% for block in section.blocks %}
-        <button class="new-slider__dot" data-dot-index="{{ forloop.index0 }}" aria-label="Go to slide {{ forloop.index }}" role="tab" aria-selected="{{ forloop.first }}"></button>
+        <button
+          class="new-slider__dot"
+          data-dot-index="{{ forloop.index0 }}"
+          aria-label="Go to slide {{ forloop.index }}"
+          role="tab"
+          aria-selected="{{ forloop.first }}"
+        ></button>
       {% endfor %}
     </div>
   {% endif %}
@@ -194,8 +212,7 @@
       #new-slider-{{ section.id }} .new-slider__description { font-size: calc(var(--description-font-size) * 0.9); }
     }
   </style>
- 
-  
+
   <script>
     (function() {
       const slider = document.getElementById('new-slider-{{ section.id }}');
@@ -267,26 +284,88 @@
       slider._instance = { cleanup: () => { stop(); } };
     })();
   </script>
-
+  fds
 </section>
- 
+
 {% schema %}
 {
   "name": "Enhanced Slider",
   "settings": [
-    { "type": "select", "id": "height", "label": "Slider height", "options":[{"value":"300px","label":"300px"},{"value":"400px","label":"400px"},{"value":"500px","label":"500px"},{"value":"600px","label":"600px"},{"value":"700px","label":"700px"}], "default":"500px" },
-    { "type": "select", "id": "text_align", "label": "Text alignment", "options":[{"value":"left","label":"Left"},{"value":"center","label":"Center"},{"value":"right","label":"Right"}], "default":"center" },
-    { "type": "select", "id": "image_object_fit", "label": "Image fit", "options":[{"value":"cover","label":"Cover"},{"value":"contain","label":"Contain"},{"value":"fill","label":"Fill"}], "default":"cover" },
-    { "type": "select", "id": "heading_font_size", "label": "Heading size", "options":[{"value":"24px","label":"Small"},{"value":"32px","label":"Medium"},{"value":"42px","label":"Large"},{"value":"52px","label":"Extra Large"}], "default":"42px" },
-    { "type": "color", "id": "heading_color", "label": "Heading color", "default":"#ffffff" },
-    { "type": "select", "id": "description_font_size", "label": "Description size", "options":[{"value":"14px","label":"Small"},{"value":"16px","label":"Medium"},{"value":"18px","label":"Large"},{"value":"20px","label":"Extra Large"}], "default":"18px" },
-    { "type": "color", "id": "description_color", "label": "Description color", "default":"#ffffff" },
-    { "type": "color", "id": "button_bg_color", "label": "Button background", "default":"#000000" },
-    { "type": "color", "id": "button_text_color", "label": "Button text color", "default":"#ffffff" },
+    {
+      "type": "select",
+      "id": "height",
+      "label": "Slider height",
+      "options": [
+        { "value": "300px", "label": "300px" },
+        { "value": "400px", "label": "400px" },
+        { "value": "500px", "label": "500px" },
+        { "value": "600px", "label": "600px" },
+        { "value": "700px", "label": "700px" }
+      ],
+      "default": "500px"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "image_object_fit",
+      "label": "Image fit",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" },
+        { "value": "fill", "label": "Fill" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "heading_font_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "24px", "label": "Small" },
+        { "value": "32px", "label": "Medium" },
+        { "value": "42px", "label": "Large" },
+        { "value": "52px", "label": "Extra Large" }
+      ],
+      "default": "42px"
+    },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#ffffff" },
+    {
+      "type": "select",
+      "id": "description_font_size",
+      "label": "Description size",
+      "options": [
+        { "value": "14px", "label": "Small" },
+        { "value": "16px", "label": "Medium" },
+        { "value": "18px", "label": "Large" },
+        { "value": "20px", "label": "Extra Large" }
+      ],
+      "default": "18px"
+    },
+    { "type": "color", "id": "description_color", "label": "Description color", "default": "#ffffff" },
+    { "type": "color", "id": "button_bg_color", "label": "Button background", "default": "#000000" },
+    { "type": "color", "id": "button_text_color", "label": "Button text color", "default": "#ffffff" },
     { "type": "checkbox", "id": "show_arrows", "label": "Show arrows", "default": true },
     { "type": "checkbox", "id": "show_dots", "label": "Show dots", "default": true },
     { "type": "checkbox", "id": "autoplay", "label": "Enable autoplay", "default": true },
-    { "type": "range", "id": "interval", "label": "Change slides every (seconds)", "min":3, "max":10, "step":1, "default":5 }
+    {
+      "type": "range",
+      "id": "interval",
+      "label": "Change slides every (seconds)",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    }
   ],
   "blocks": [
     {
@@ -294,16 +373,35 @@
       "name": "Slide",
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Image" },
-        { "type": "richtext", "id": "heading", "label": "Heading", "default": "<p><strong>Your Heading Here</strong></p>" },
-        { "type": "richtext", "id": "description", "label": "Description", "default": "<p>Add your description here with <em>formatting</em></p>" },
+        {
+          "type": "richtext",
+          "id": "heading",
+          "label": "Heading",
+          "default": "<p><strong>Your Heading Here</strong></p>"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Add your description here with <em>formatting</em></p>"
+        },
         { "type": "url", "id": "link", "label": "Button link" },
         { "type": "text", "id": "button_text", "label": "Button text", "default": "Learn More" },
-        { "type": "select", "id": "image_size", "label": "Image size", "options":[{"value":"small","label":"Small (300x)"},{"value":"medium","label":"Medium (600x)"},{"value":"large","label":"Large (900x)"},{"value":"master","label":"Original"}], "default":"master" }
+        {
+          "type": "select",
+          "id": "image_size",
+          "label": "Image size",
+          "options": [
+            { "value": "small", "label": "Small (300x)" },
+            { "value": "medium", "label": "Medium (600x)" },
+            { "value": "large", "label": "Large (900x)" },
+            { "value": "master", "label": "Original" }
+          ],
+          "default": "master"
+        }
       ]
     }
   ],
-  "presets": [
-    { "name": "Enhanced Slider", "category": "Image", "blocks":[ { "type":"slide" } ] }
-  ]
+  "presets": [{ "name": "Enhanced Slider", "category": "Image", "blocks": [{ "type": "slide" }] }]
 }
 {% endschema %}
